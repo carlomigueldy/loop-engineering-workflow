@@ -14,11 +14,12 @@ The implementing context is blind to its own assumptions. This skill gets one cl
 
 ## Procedure
 
-1. Determine the diff range: the merge-base of the feature branch with the default branch, or the first checkpoint commit of this piece of work. State the range.
+1. Determine the diff range: the merge-base of the feature branch with the default branch, or the parent of the first checkpoint commit of this piece of work — the first stage's changes must be inside the range. Spec and plan docs committed before implementation fall outside it. State the range.
 2. Identify the spec path (`docs/loop/specs/...`) if one exists for this work.
-3. Dispatch **one** subagent (general-purpose, read-only mindset) with the prompt template below. Do not dispatch more than one reviewer; do not have the reviewer fix anything.
-4. Triage every finding (see Triage). Apply fixes yourself in the main context.
-5. Re-run verification after fixes.
+3. Ensure everything under review is committed — the reviewer sees only committed history. Commit it (or, for on-demand reviews, ask the user to) before dispatching.
+4. Dispatch **one** subagent (general-purpose, read-only mindset) with the prompt template below. Do not dispatch more than one reviewer; do not have the reviewer fix anything.
+5. Triage every finding (see Triage). Apply fixes yourself in the main context.
+6. Re-run verification after fixes, and commit the review fixes as a checkpoint.
 
 ## Reviewer Prompt Template
 
@@ -36,9 +37,11 @@ Review for, in priority order:
 2. Spec compliance — anything the spec requires that the diff does not deliver, or scope the spec excludes that the diff adds.
 3. Security — injection, authz gaps, secrets, unsafe defaults (flag only what is concretely present in the diff).
 4. Maintainability — naming that misleads, dead code, duplication introduced by the diff.
+5. Test coverage — changed behavior with no test exercising it (verification only runs existing tests; it cannot notice absent ones).
 
 Rules:
 - Read the diff and any file needed to judge it. Do not modify anything.
+- If the diff command fails or returns an empty diff, stop and report that — do not review anything else.
 - Report findings ONLY for issues introduced or made worse by this diff — not pre-existing problems (note at most one line: "pre-existing issues observed: yes/no").
 - For each finding: severity (blocker | important | nit), file:line, what is wrong, why it matters, and a concrete suggested fix.
 - If you find nothing at a severity level, say so explicitly. An empty review of a large diff is a red flag — look harder at edge cases before concluding.
@@ -51,7 +54,9 @@ Return: a numbered list of findings grouped by severity, then a one-paragraph ov
 Every finding gets exactly one disposition, stated out loud before moving on:
 
 - **Fix** — blockers and importants default here. Fix now, in this session.
-- **Defer** — valid but out of scope. Record it: on Deep, append to the plan doc's end under `## Deferred from review`; otherwise tell the user. A deferral without a written destination is a silent drop — not allowed.
-- **Reject** — the reviewer is wrong or the tradeoff is intentional. State the reason in one or two sentences. Rejecting a blocker requires telling the user explicitly.
+- **Defer** — valid but not being fixed now (out of scope, or too large/risky for this session). Record it: on Deep, append to the plan doc's end under `## Deferred from review`; otherwise tell the user. A deferral without a written destination is a silent drop — not allowed.
+- **Reject** — the reviewer is wrong or the tradeoff is intentional. State the reason in one or two sentences.
+
+Nits default to fix-or-reject, still stated. Deferring or rejecting a **blocker** additionally requires telling the user explicitly, in conversation.
 
 Never silently ignore a finding. Never let the reviewer's verdict replace verification — the verify suite still runs after fixes.
