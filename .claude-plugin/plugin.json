@@ -1,0 +1,13 @@
+{
+  "name": "eng-loop",
+  "displayName": "Engineering Loop",
+  "description": "Three-tier engineering loop (Quick/Standard/Deep): verification evidence on every tier, fresh-context review and spec/plan docs on Deep, conditional compounding of learnings. Token-efficient by design — one context drives the loop.",
+  "version": "0.1.0",
+  "author": {
+    "name": "Carlo Miguel Dy",
+    "email": "carlomigueldy@yahoo.com"
+  },
+  "repository": "https://github.com/carlomigueldy/loop-engineering-workflow",
+  "license": "MIT",
+  "keywords": ["workflow", "engineering-loop", "verification", "compounding", "token-efficiency"]
+}

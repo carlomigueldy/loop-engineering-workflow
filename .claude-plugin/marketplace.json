@@ -1,0 +1,15 @@
+{
+  "name": "eng-loop-marketplace",
+  "description": "Distribution marketplace for the eng-loop engineering workflow plugin",
+  "owner": {
+    "name": "Carlo Miguel Dy",
+    "email": "carlomigueldy@yahoo.com"
+  },
+  "plugins": [
+    {
+      "name": "eng-loop",
+      "source": "./",
+      "description": "Three-tier engineering loop with verification evidence, fresh-context review, and compounding learnings."
+    }
+  ]
+}
