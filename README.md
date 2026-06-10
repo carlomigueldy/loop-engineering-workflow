@@ -19,7 +19,7 @@ Claude states the tier up front; you can override anytime. Escalation upward is 
 claude plugin marketplace add ~/personal/loop-engineering-workflow
 claude plugin install eng-loop@eng-loop-marketplace
 
-# or from GitHub (once this repo is pushed to github.com/carlomigueldy/loop-engineering-workflow)
+# or from GitHub
 claude plugin marketplace add carlomigueldy/loop-engineering-workflow
 claude plugin install eng-loop@eng-loop-marketplace
 ```
