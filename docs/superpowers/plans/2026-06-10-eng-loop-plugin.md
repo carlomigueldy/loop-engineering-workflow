@@ -465,7 +465,7 @@ Then report: detected commands, stack notes, files created vs preserved, and (if
 
 ## Idempotency contract
 
-Running provision twice in a row with no project changes in between must produce zero diff on the second run. Re-provision after a plugin update refreshes generated content while preserving the rules block and all user content outside the markers.
+Running provision twice in a row with no project changes in between must produce zero diff on the second run. Re-provision after a plugin update refreshes generated content while preserving the rules block, any hand-corrected verify lines, and all user content outside the markers.
 ````
 
 - [ ] **Step 2: Validate**
