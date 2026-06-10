@@ -509,12 +509,15 @@ Claude states the tier up front; you can override anytime. Escalation upward is 
 ## Install
 
 ```bash
-# from a local clone
-claude plugin marketplace add ~/personal/loop-engineering-workflow
-claude plugin install eng-loop@eng-loop-marketplace
-
-# or from GitHub
 claude plugin marketplace add carlomigueldy/loop-engineering-workflow
+claude plugin install eng-loop@eng-loop-marketplace
+```
+
+Or from a local clone:
+
+```bash
+git clone https://github.com/carlomigueldy/loop-engineering-workflow.git
+claude plugin marketplace add ./loop-engineering-workflow
 claude plugin install eng-loop@eng-loop-marketplace
 ```
 
@@ -548,6 +551,10 @@ claude plugin validate .claude-plugin/plugin.json --strict   # validates plugin 
 claude plugin validate .                                     # validates the marketplace manifest
 claude --plugin-dir .                                        # load this working copy into a session
 ```
+
+## License
+
+MIT
 ````
 
 - [ ] **Step 2: Commit**
