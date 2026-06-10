@@ -502,7 +502,7 @@ A three-tier engineering loop for Claude Code. One plugin, installed once, used 
 |---|---|---|
 | **Quick** | Typos, config tweaks, one-liners | do it → verify with evidence → compound check |
 | **Standard** | Most features, bugfixes, refactors | orient → inline plan → implement → self-review → verify → compound |
-| **Deep** | Architectural, risky, unfamiliar | spec → plan → staged implementation → fresh-context review → verify → compound |
+| **Deep** | Architectural, risky, unfamiliar | orient → spec → plan → staged implementation → fresh-context review → verify → compound |
 
 Claude states the tier up front; you can override anytime. Escalation upward is free; de-escalation needs your sign-off. Never "done" without command output as evidence. TDD is available, never mandated.
 
