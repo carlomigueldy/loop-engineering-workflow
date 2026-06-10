@@ -506,6 +506,14 @@ A three-tier engineering loop for Claude Code. One plugin, installed once, used 
 
 Claude states the tier up front; you can override anytime. Escalation upward is free; de-escalation needs your sign-off. Never "done" without command output as evidence. TDD is available, never mandated.
 
+## How it works
+
+![How eng-loop works](assets/how-it-works.svg)
+
+Install once, provision each project, then every task runs the same loop: classify the tier, do the tier's stages, pass the evidence gate, and let the compound check feed anything worth keeping back into the project state — which the next task reads at orient. That feedback edge is the point: every task can make the next one smarter.
+
+*The diagram is editable — open [`assets/how-it-works.excalidraw`](assets/how-it-works.excalidraw) at [excalidraw.com](https://excalidraw.com).*
+
 ## Install
 
 ```bash

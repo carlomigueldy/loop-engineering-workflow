@@ -1,0 +1,125 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1320 860" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif">
+  <defs>
+    <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#1e1e1e"/>
+    </marker>
+    <marker id="ahp" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#9c36b5"/>
+    </marker>
+  </defs>
+
+  <rect x="0" y="0" width="1320" height="860" fill="#ffffff"/>
+
+  <text x="40" y="44" font-size="24" font-weight="600" fill="#1e1e1e">eng-loop — how it works</text>
+
+  <!-- Row 1: setup -->
+  <rect x="40" y="70" width="230" height="70" rx="10" fill="#a5d8ff" stroke="#1e1e1e" stroke-width="2"/>
+  <text x="155" y="100" font-size="14" text-anchor="middle" fill="#1e1e1e">
+    <tspan x="155" font-weight="600">① Install the plugin</tspan>
+    <tspan x="155" dy="18">once, from the marketplace</tspan>
+  </text>
+
+  <rect x="330" y="70" width="270" height="70" rx="10" fill="#a5d8ff" stroke="#1e1e1e" stroke-width="2"/>
+  <text x="465" y="100" font-size="14" text-anchor="middle" fill="#1e1e1e">
+    <tspan x="465" font-weight="600">② /eng-loop:provision</tspan>
+    <tspan x="465" dy="18">once per project</tspan>
+  </text>
+
+  <rect x="660" y="60" width="400" height="96" rx="10" fill="#ffec99" stroke="#1e1e1e" stroke-width="2"/>
+  <text x="860" y="88" font-size="14" text-anchor="middle" fill="#1e1e1e">
+    <tspan x="860" font-weight="600">Project state</tspan>
+    <tspan x="860" dy="18">managed CLAUDE.md — verify commands · rules block</tspan>
+    <tspan x="860" dy="18">docs/loop/ — specs · plans · learnings</tspan>
+  </text>
+
+  <line x1="272" y1="105" x2="324" y2="105" stroke="#1e1e1e" stroke-width="2" marker-end="url(#ah)"/>
+  <line x1="602" y1="105" x2="654" y2="105" stroke="#1e1e1e" stroke-width="2" marker-end="url(#ah)"/>
+
+  <!-- Row 2: task + classify -->
+  <rect x="40" y="230" width="230" height="64" rx="10" fill="#ffffff" stroke="#1e1e1e" stroke-width="2"/>
+  <text x="155" y="267" font-size="14" font-weight="600" text-anchor="middle" fill="#1e1e1e">③ Any engineering task</text>
+
+  <rect x="330" y="215" width="300" height="94" rx="10" fill="#d0bfff" stroke="#1e1e1e" stroke-width="2"/>
+  <text x="480" y="255" font-size="14" text-anchor="middle" fill="#1e1e1e">
+    <tspan x="480" font-weight="600">Classify the tier</tspan>
+    <tspan x="480" dy="18">announced up front · you can override</tspan>
+  </text>
+
+  <line x1="272" y1="262" x2="324" y2="262" stroke="#1e1e1e" stroke-width="2" marker-end="url(#ah)"/>
+  <line x1="740" y1="158" x2="515" y2="211" stroke="#5f5f5f" stroke-width="2" stroke-dasharray="7 5" marker-end="url(#ah)"/>
+  <text x="712" y="206" font-size="12" text-anchor="middle" fill="#5f5f5f">
+    <tspan x="712">read back at orient:</tspan>
+    <tspan x="712" dy="15">verify commands · learnings</tspan>
+  </text>
+
+  <!-- Row 3: tier lanes -->
+  <rect x="40" y="370" width="350" height="170" rx="10" fill="#b2f2bb" stroke="#1e1e1e" stroke-width="2"/>
+  <text x="215" y="404" font-size="14" text-anchor="middle" fill="#1e1e1e">
+    <tspan x="215" font-weight="600" font-size="15">Quick</tspan>
+    <tspan x="215" dy="20">typos · config tweaks · one-liners</tspan>
+    <tspan x="215" dy="34">do it → verify → compound</tspan>
+  </text>
+
+  <rect x="460" y="370" width="380" height="170" rx="10" fill="#a5d8ff" stroke="#1e1e1e" stroke-width="2"/>
+  <text x="650" y="404" font-size="14" text-anchor="middle" fill="#1e1e1e">
+    <tspan x="650" font-weight="600" font-size="15">Standard — the default</tspan>
+    <tspan x="650" dy="20">features · bugfixes · refactors</tspan>
+    <tspan x="650" dy="34">orient → inline plan → implement</tspan>
+    <tspan x="650" dy="18">→ self-review → verify → compound</tspan>
+  </text>
+
+  <rect x="910" y="370" width="370" height="170" rx="10" fill="#ffc9c9" stroke="#1e1e1e" stroke-width="2"/>
+  <text x="1095" y="404" font-size="14" text-anchor="middle" fill="#1e1e1e">
+    <tspan x="1095" font-weight="600" font-size="15">Deep</tspan>
+    <tspan x="1095" dy="20">architectural · risky · unfamiliar</tspan>
+    <tspan x="1095" dy="34">orient → spec (you approve) → plan</tspan>
+    <tspan x="1095" dy="18">→ staged commits → cold review</tspan>
+    <tspan x="1095" dy="18">→ verify → compound</tspan>
+  </text>
+
+  <line x1="440" y1="311" x2="234" y2="364" stroke="#1e1e1e" stroke-width="2" marker-end="url(#ah)"/>
+  <line x1="485" y1="311" x2="637" y2="364" stroke="#1e1e1e" stroke-width="2" marker-end="url(#ah)"/>
+  <line x1="540" y1="311" x2="1074" y2="366" stroke="#1e1e1e" stroke-width="2" marker-end="url(#ah)"/>
+
+  <line x1="392" y1="455" x2="454" y2="455" stroke="#5f5f5f" stroke-width="2" stroke-dasharray="7 5" marker-end="url(#ah)"/>
+  <line x1="842" y1="455" x2="904" y2="455" stroke="#5f5f5f" stroke-width="2" stroke-dasharray="7 5" marker-end="url(#ah)"/>
+  <text x="650" y="566" font-size="12" text-anchor="middle" fill="#5f5f5f">escalate freely mid-task · de-escalation needs your sign-off</text>
+
+  <!-- Row 4: evidence gate -->
+  <rect x="460" y="600" width="380" height="64" rx="10" fill="#ffd8a8" stroke="#1e1e1e" stroke-width="2"/>
+  <text x="650" y="628" font-size="14" text-anchor="middle" fill="#1e1e1e">
+    <tspan x="650" font-weight="600">Gate: verify with evidence</tspan>
+    <tspan x="650" dy="18">command output shown — or it isn't done</tspan>
+  </text>
+
+  <line x1="215" y1="542" x2="525" y2="596" stroke="#1e1e1e" stroke-width="2" marker-end="url(#ah)"/>
+  <line x1="650" y1="542" x2="650" y2="594" stroke="#1e1e1e" stroke-width="2" marker-end="url(#ah)"/>
+  <line x1="1095" y1="542" x2="775" y2="596" stroke="#1e1e1e" stroke-width="2" marker-end="url(#ah)"/>
+
+  <!-- Row 5: compound + loop back -->
+  <rect x="460" y="720" width="380" height="70" rx="10" fill="#d0bfff" stroke="#1e1e1e" stroke-width="2"/>
+  <text x="650" y="750" font-size="14" text-anchor="middle" fill="#1e1e1e">
+    <tspan x="650" font-weight="600">Compound check</tspan>
+    <tspan x="650" dy="18">did this teach something a future session needs?</tspan>
+  </text>
+
+  <line x1="650" y1="666" x2="650" y2="714" stroke="#1e1e1e" stroke-width="2" marker-end="url(#ah)"/>
+
+  <line x1="458" y1="755" x2="386" y2="755" stroke="#5f5f5f" stroke-width="2" marker-end="url(#ah)"/>
+  <text x="300" y="752" font-size="13" text-anchor="middle" fill="#5f5f5f">
+    <tspan x="300">no → done ✓</tspan>
+    <tspan x="300" dy="16">(most tasks)</tspan>
+  </text>
+
+  <path d="M 842 755 C 1240 752, 1302 600, 1302 330 C 1302 160, 1240 110, 1072 108" fill="none" stroke="#9c36b5" stroke-width="2.5" marker-end="url(#ahp)"/>
+  <text x="1024" y="613" font-size="13" fill="#9c36b5">
+    <tspan x="1024" font-weight="600">yes:</tspan>
+    <tspan x="1024" dy="17">rule → CLAUDE.md rules block</tspan>
+    <tspan x="1024" dy="17">gotcha → docs/loop/learnings/</tspan>
+    <tspan x="1024" dy="17">procedure → project skill</tspan>
+  </text>
+  <text x="1010" y="264" font-size="14" font-style="italic" fill="#9c36b5">
+    <tspan x="1010">every task can make</tspan>
+    <tspan x="1010" dy="18">the next one smarter</tspan>
+  </text>
+</svg>
