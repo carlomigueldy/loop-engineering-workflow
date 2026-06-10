@@ -528,7 +528,7 @@ Detects the stack and verify commands, writes the managed CLAUDE.md section, sca
 
 ## Skills
 
-- `eng-loop:loop` — the methodology; auto-triggers at the start of engineering tasks and offers provisioning once per session if the managed section is missing
+- `eng-loop:loop` — the methodology; auto-triggers at the start of engineering tasks in provisioned projects, and suggests `/eng-loop:provision` once per session where the managed section is missing
 - `eng-loop:provision` — project setup (slash-only)
 - `eng-loop:compound` — learning capture: rules → CLAUDE.md (30-line budget), gotchas → `docs/loop/learnings/`, procedures → project skills; pruning built in
 - `eng-loop:review` — Deep-tier cold-context diff review with explicit fix/defer/reject triage
