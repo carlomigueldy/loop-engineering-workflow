@@ -8,20 +8,27 @@ disable-model-invocation: true
 
 Sets up the thin per-repo footprint. Logic stays in the plugin; only config and state land here.
 
+## Step 0 — Preconditions
+
+- The project is a git repository on a branch (not detached HEAD); abort and report otherwise.
+- The index is empty (`git diff --cached --quiet`) and `CLAUDE.md` / `docs/loop/` have no uncommitted changes (`git status --porcelain CLAUDE.md docs/loop/` prints nothing). If not, stop and ask the user to commit or stash first — provision must never sweep user work into its commit.
+
 ## Step 1 — Detect the stack
 
 Inspect the project root (root only — no recursive sweeps):
 
 | Marker | Stack | Candidate verify commands |
 |---|---|---|
-| `package.json` | Node | Read its `scripts` block. Map: test → `test`; lint → `lint`; build → `build`; typecheck → `typecheck` OR `type-check` (both naming conventions exist). If an aggregate script exists (`verify`, `check`, `ci`), prefer it and note what it covers. Use the lockfile to pick the runner: `pnpm-lock.yaml` → `pnpm run <s>`, `yarn.lock` → `yarn <s>`, `bun.lockb` → `bun run <s>`, else `npm run <s>` |
-| `pubspec.yaml` | Flutter/Dart | `flutter test`, `flutter analyze`; add `dart format --set-exit-if-changed .` only if `analysis_options.yaml` exists |
-| `pyproject.toml` / `requirements.txt` | Python | `pytest` if pytest is a dependency; `ruff check .` if ruff is; otherwise leave unset |
-| `Cargo.toml` | Rust | `cargo test`, `cargo clippy -- -D warnings`, `cargo build` |
-| `go.mod` | Go | `go test ./...`, `go vet ./...`, `go build ./...` |
+| `package.json` | Node | Read its `scripts` block. Map: test → `test`; lint → `lint`; build → `build`; typecheck → `typecheck` OR `type-check` (both naming conventions exist). If an aggregate script exists (`verify`, `check`, `ci`), emit the optional All: verify line with it and still fill the four slots individually. Use the lockfile to pick the runner: `pnpm-lock.yaml` → `pnpm run <s>`, `yarn.lock` → `yarn <s>`, `bun.lockb` → `bun run <s>`, else `npm run <s>` |
+| `pubspec.yaml` | Flutter/Dart | Test → `flutter test`; Lint → `flutter analyze`, appending `dart format --set-exit-if-changed .` only if `analysis_options.yaml` exists; Build and Typecheck → none configured |
+| `pyproject.toml` / `requirements.txt` | Python | Test → `pytest` if pytest is a dependency; Lint → `ruff check .` if ruff is; Build and Typecheck → none configured |
+| `Cargo.toml` | Rust | Test → `cargo test`; Lint → `cargo clippy -- -D warnings`; Build → `cargo build`; Typecheck → none configured (the compiler covers it) |
+| `go.mod` | Go | Test → `go test ./...`; Lint → `go vet ./...`; Build → `go build ./...`; Typecheck → none configured |
 | `src-tauri/` alongside `package.json` | Tauri | Node commands above, plus stack note: "Rust backend in src-tauri/ — run `cargo check` there when touching it" |
 | `turbo.json` / `pnpm-workspace.yaml` / `nx.json` | Monorepo | Stack note: "monorepo — root scripts fan out; scope to a package when iterating" |
 | `docker-compose.yml` | — | Stack note only: "services run via docker compose" |
+
+If multiple primary stack markers coexist at the root, fill each slot from the first table row (top to bottom) that provides it, and add one stack note naming all detected stacks.
 
 A command that does not exist is **not invented**: record `none configured` for that slot. The loop's verification fallback handles it.
 
@@ -31,12 +38,12 @@ Present the detected verify commands and stack notes. If the session is interact
 
 ## Step 3 — Write the managed CLAUDE.md section
 
-**Precondition — marker integrity.** Count occurrences of each of the four marker strings in CLAUDE.md. Proceed only when either (a) all four counts are zero — the append/create path — or (b) `<!-- eng-loop:start -->` and `<!-- eng-loop:end -->` each occur exactly once, in that order, with the rules pair exactly once each between them — the replace path. In ANY other state (orphaned marker, duplicates, rules markers outside the outer pair), abort without writing or committing and report the malformed state to the user.
+**Precondition — marker integrity.** Count lines consisting solely of each of the four marker strings in CLAUDE.md (markers quoted in prose or code fences do not count). Proceed only when either (a) all four counts are zero — the append/create path — or (b) `<!-- eng-loop:start -->` and `<!-- eng-loop:end -->` each occur exactly once, in that order, with the rules pair exactly once each, in that order, between them — the replace path. In ANY other state (orphaned marker, duplicates, rules markers outside the outer pair), abort without writing or committing and report the malformed state to the user.
 
 If CLAUDE.md does not exist at the project root, create it containing only the managed section. If it exists:
 
-- **No markers present:** append the managed section at the end of the file.
-- **Markers present (re-provision):** replace everything between `<!-- eng-loop:start -->` and `<!-- eng-loop:end -->` — EXCEPT the rules block: preserve the exact lines between `<!-- eng-loop:rules:start -->` and `<!-- eng-loop:rules:end -->` verbatim, including when empty. Never touch anything outside the outer markers.
+- **No markers present:** append the managed section at the end of the file, preceded by exactly one blank line.
+- **Markers present (re-provision):** replace everything between `<!-- eng-loop:start -->` and `<!-- eng-loop:end -->` — EXCEPT the rules block: preserve the exact lines between `<!-- eng-loop:rules:start -->` and `<!-- eng-loop:rules:end -->` verbatim, including when empty. When regenerating the verify lines, compare each slot with the existing line: if they differ, keep the existing line and report the difference — the user may have hand-corrected detection; never silently revert their value. Never touch anything outside the outer markers.
 
 Template (fill bracketed values; keep markers and headings exact):
 
@@ -44,16 +51,17 @@ Template (fill bracketed values; keep markers and headings exact):
 <!-- eng-loop:start -->
 ## Engineering Loop
 
-This project uses the eng-loop plugin. Every engineering task starts by classifying a tier — see the `eng-loop:loop` skill. Managed section: do not hand-edit outside the rules block; re-run /eng-loop:provision to refresh.
+This project uses the eng-loop plugin. Every engineering task starts by classifying a tier — see the `eng-loop:loop` skill. Managed section: hand-edit only the verify lines and the rules block; re-run /eng-loop:provision to refresh the rest.
 
 ### Verify commands
 - Test: [command or "none configured"]
 - Lint: [command or "none configured"]
 - Build: [command or "none configured"]
 - Typecheck: [command or "none configured"]
+- All: [aggregate command — include this line only when an aggregate script exists]
 
 ### Stack notes
-[1–4 bullet lines from detection; omit heading content if none]
+[1–4 bullet lines from detection, using the exact quoted strings from the table where given; if none, a single line: - none]
 
 ### Rules
 <!-- eng-loop:rules:start -->
@@ -79,7 +87,7 @@ One line per topic — `- [topic](./topic.md) — <when to read it>`. Added by t
 
 ## Step 5 — Commit and report
 
-Commit everything created or changed:
+If nothing changed (a no-op re-run), skip the commit and say so — the idempotency contract requires zero commits on a no-op run. Otherwise commit what provision touched:
 
 ```bash
 git add CLAUDE.md docs/loop/
