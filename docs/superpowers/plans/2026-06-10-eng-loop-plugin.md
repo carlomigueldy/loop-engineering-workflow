@@ -14,6 +14,7 @@
 1. The spec lists `provision` as a "command". Commands (`commands/*.md`) are the legacy plugin format; skills are preferred and give the same UX (`/eng-loop:provision`). All four components are implemented as skills; `provision` sets `disable-model-invocation: true` so only the user triggers it.
 2. Spec Provisioning step 2 requires user confirmation of detected commands. In non-interactive (headless) runs there is no one to ask, so provision proceeds with detections and reports them for later correction. The plan's automated tests exercise only this headless path; the interactive confirmation flow is exercised when the user first provisions a project for real.
 3. The spec's loop-behavior empirical test ("run one task per tier" against the checklist) is deliberately deferred to user acceptance: the Deep tier requires interactive one-question-at-a-time Q&A that cannot be automated honestly. Task 10 delivers the checklist and the handoff; the run itself is the user's acceptance test.
+4. The Deep tier includes a spec-approval gate ("get the user's approval of the spec before planning") that the spec's Deep step 1 does not state. Kept deliberately: it mirrors the brainstorm-and-approve flow this plugin was designed with, and de-risks the costliest tier.
 
 ---
 
@@ -113,7 +114,7 @@ Read the project's CLAUDE.md managed section (between `<!-- eng-loop:start -->` 
 |---|---|---|
 | **Quick** | Trivial, reversible, contained | Typo, copy change, config value, doc edit; expected to touch ≤2 files; no logic branches, no API/schema/contract changes |
 | **Standard** | The default — most work | Feature, bugfix, or refactor inside established patterns; bounded scope; no architectural decisions |
-| **Deep** | Risky, large, or unfamiliar | New subsystem; schema/API contract changes; auth, payments, security-sensitive paths; cross-cutting refactors; unfamiliar domain; work spanning multiple sessions |
+| **Deep** | Risky, large, or unfamiliar | New subsystem; breaking or externally-visible schema/API contract changes; auth, payments, security-sensitive paths; cross-cutting refactors; unfamiliar domain; work spanning multiple sessions |
 
 When genuinely torn between two tiers, pick the higher one.
 
@@ -121,7 +122,7 @@ When genuinely torn between two tiers, pick the higher one.
 
 1. Do it.
 2. **Verify with evidence** (see Verification Evidence below) — run the verify command relevant to the change.
-3. **Compound check** — ask: would a future session in this repo need something from this task? If no, skip silently (the expected outcome for most Quick tasks). If yes — REQUIRED SUB-SKILL: eng-loop:compound.
+3. **Compound check** — ask: would a future session need something from this task that is not already visible in code, types, tests, or CI — a rule, a gotcha, or a reusable procedure? If no, skip silently (the expected outcome for most Quick tasks). If yes — REQUIRED SUB-SKILL: eng-loop:compound.
 
 ## Standard
 
@@ -130,28 +131,29 @@ When genuinely torn between two tiers, pick the higher one.
 3. **Implement** — write tests where they fit the change. TDD is available when it helps; it is never mandated.
 4. **Self-review** — read the full diff (`git diff`) before declaring anything: debug leftovers, missed call sites, dead code, scope creep.
 5. **Verify with evidence** — run the full verify suite from the managed section.
-6. **Compound check** — ask: would a future session in this repo need something from this task? If no, skip silently. If yes — REQUIRED SUB-SKILL: eng-loop:compound.
+6. **Compound check** — same question as Quick: anything a future session needs that is not already visible in code, types, tests, or CI? If no, skip silently. If yes — REQUIRED SUB-SKILL: eng-loop:compound.
 
 ## Deep
 
-1. **Spec** — clarifying Q&A with the user, one question at a time, then write the spec to `docs/loop/specs/YYYY-MM-DD-<topic>.md` and commit it. Get the user's approval of the spec before planning.
-2. **Plan** — staged implementation plan to `docs/loop/plans/YYYY-MM-DD-<topic>.md`, committed. Each stage ends in a working state.
-3. **Implement in stages** — one checkpoint commit per plan stage, naming the stage in the commit message. State lives in git, not in context: a fresh session must be able to resume from the repo alone.
-4. **Fresh-context review** — REQUIRED SUB-SKILL: eng-loop:review. Triage every finding: fix / defer / reject, each with a stated reason.
-5. **Verify with evidence** — full verify suite.
-6. **Compound check** — ask: would a future session in this repo need something from this task? Deep work almost always produces a learning. If yes — REQUIRED SUB-SKILL: eng-loop:compound; if genuinely nothing, say so in one line.
+1. **Orient** — as Standard step 1, including the `docs/loop/learnings/INDEX.md` check (if present): Deep work needs the read-back most.
+2. **Spec** — clarifying Q&A with the user, one question at a time, then write the spec to `docs/loop/specs/YYYY-MM-DD-<topic>.md` and commit it. Create a feature branch before this first commit (trunk-based repos may commit to the default branch). Get the user's approval of the spec before planning.
+3. **Plan** — staged implementation plan to `docs/loop/plans/YYYY-MM-DD-<topic>.md`, committed. Each stage ends in a working state.
+4. **Implement in stages** — one checkpoint commit per plan stage, naming the stage in the commit message. State lives in git, not in context: a fresh session must be able to resume from the repo alone.
+5. **Fresh-context review** — REQUIRED SUB-SKILL: eng-loop:review. Triage every finding: fix / defer / reject, each with a stated reason.
+6. **Verify with evidence** — full verify suite (the post-review-fix run from eng-loop:review satisfies this when nothing changed since).
+7. **Compound check** — same question; Deep work almost always produces a learning. If yes — REQUIRED SUB-SKILL: eng-loop:compound; if genuinely nothing, say so in one line.
 
 ## Verification Evidence
 
 Never claim done, fixed, or passing without running the actual command and showing its output in the same message as the claim.
 
-- Use the verify commands from the managed CLAUDE.md section. Quick tier may run only the relevant subset; Standard and Deep run the full set.
-- If the project has no verify command for the change (e.g. no test script): build or compile if possible; otherwise demonstrate the change working (run the app, hit the endpoint, render the page) and show that output. Reasoning alone is never evidence. For doc-only changes, showing the corrected text in place is sufficient evidence.
+- Use the verify commands from the managed CLAUDE.md section. Standard and Deep run the full set. Quick runs the relevant subset: the cheapest command(s) that could plausibly fail because of this change.
+- If no listed command exercises the change: build or compile if possible; otherwise demonstrate the change working (run the app, hit the endpoint, render the page) and show that output. For changes no command or build touches at all (doc edits, UI copy, config values), showing the changed artifact in place is sufficient evidence. Reasoning alone is never evidence.
 - A failing verify command means the work is not done. Report the failure honestly and continue the loop; never reword a failure as success.
 
 ## Escalation Rule (the loop's error handling)
 
-If the task surprises you mid-tier — a Quick fix touches more files than expected, a Standard task reveals architectural implications — **stop, say so, re-classify upward**, and adopt the higher tier's remaining stages (e.g. Standard→Deep mid-flight: write the spec for what remains — the spec-approval gate still applies — then continue).
+If the task surprises you mid-tier — a Quick fix touches more files than expected, a Standard task reveals architectural implications — **stop, say so, and re-classify**. If the new classification is a higher tier, adopt its remaining stages (e.g. Standard→Deep mid-flight: write the spec for what remains — the spec-approval gate still applies — then continue). If it stays the same tier, say so and update the inline plan.
 
 - Escalation needs no permission. Announce it and proceed.
 - De-escalation requires the user's explicit sign-off.
@@ -295,7 +297,7 @@ The implementing context is blind to its own assumptions. This skill gets one cl
 
 ## Procedure
 
-1. Determine the diff range: the merge-base of the feature branch with the default branch, or the parent of the first checkpoint commit of this piece of work — the first stage's changes must be inside the range. Spec and plan docs committed before implementation fall outside it. State the range.
+1. Determine the diff range: BASE is the parent of the first implementation checkpoint commit (when spec and plan were committed before the branch was cut, this equals the merge-base with the default branch). Verify with `git log` that spec and plan commits fall outside the range and the first implementation stage falls inside it. State the range.
 2. Identify the spec path (`docs/loop/specs/...`) if one exists for this work.
 3. Ensure everything under review is committed — the reviewer sees only committed history. Commit it (or, for on-demand reviews, ask the user to) before dispatching.
 4. Dispatch **one** subagent (general-purpose, read-only mindset) with the prompt template below. Do not dispatch more than one reviewer; do not have the reviewer fix anything.
@@ -338,7 +340,7 @@ Every finding gets exactly one disposition, stated out loud before moving on:
 - **Defer** — valid but not being fixed now (out of scope, or too large/risky for this session). Record it: on Deep, append to the plan doc's end under `## Deferred from review`; otherwise tell the user. A deferral without a written destination is a silent drop — not allowed.
 - **Reject** — the reviewer is wrong or the tradeoff is intentional. State the reason in one or two sentences.
 
-Nits default to fix-or-reject, still stated. Deferring or rejecting a **blocker** additionally requires telling the user explicitly, in conversation.
+Nits default to fix-or-reject, still stated. Deferring or rejecting a **blocker** is a gate: state the reason and wait for the user's acknowledgment before proceeding. In a non-interactive session, treat an unresolved blocker as Fix — never self-certify its rejection.
 
 Never silently ignore a finding. Never let the reviewer's verdict replace verification — the verify suite still runs after fixes.
 ````
@@ -511,7 +513,7 @@ Claude states the tier up front; you can override anytime. Escalation upward is 
 claude plugin marketplace add ~/personal/loop-engineering-workflow
 claude plugin install eng-loop@eng-loop-marketplace
 
-# or from GitHub
+# or from GitHub (once this repo is pushed to github.com/carlomigueldy/loop-engineering-workflow)
 claude plugin marketplace add carlomigueldy/loop-engineering-workflow
 claude plugin install eng-loop@eng-loop-marketplace
 ```
@@ -741,6 +743,7 @@ Empirical acceptance test for the loop itself. Run in any provisioned project wi
 
 ## Deep tier (pick a genuinely risky/architectural task, or simulate one)
 - [ ] Tier stated up front
+- [ ] Orient ran before the spec — learnings INDEX checked (if present)
 - [ ] Spec written via one-question-at-a-time Q&A, committed to docs/loop/specs/, user approval obtained before planning
 - [ ] Plan committed to docs/loop/plans/ with stages; checkpoint commit per stage
 - [ ] Exactly ONE review subagent dispatched; findings returned with severities

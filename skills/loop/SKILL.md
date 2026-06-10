@@ -21,7 +21,7 @@ Read the project's CLAUDE.md managed section (between `<!-- eng-loop:start -->` 
 |---|---|---|
 | **Quick** | Trivial, reversible, contained | Typo, copy change, config value, doc edit; expected to touch ≤2 files; no logic branches, no API/schema/contract changes |
 | **Standard** | The default — most work | Feature, bugfix, or refactor inside established patterns; bounded scope; no architectural decisions |
-| **Deep** | Risky, large, or unfamiliar | New subsystem; schema/API contract changes; auth, payments, security-sensitive paths; cross-cutting refactors; unfamiliar domain; work spanning multiple sessions |
+| **Deep** | Risky, large, or unfamiliar | New subsystem; breaking or externally-visible schema/API contract changes; auth, payments, security-sensitive paths; cross-cutting refactors; unfamiliar domain; work spanning multiple sessions |
 
 When genuinely torn between two tiers, pick the higher one.
 
@@ -29,7 +29,7 @@ When genuinely torn between two tiers, pick the higher one.
 
 1. Do it.
 2. **Verify with evidence** (see Verification Evidence below) — run the verify command relevant to the change.
-3. **Compound check** — ask: would a future session in this repo need something from this task? If no, skip silently (the expected outcome for most Quick tasks). If yes — REQUIRED SUB-SKILL: eng-loop:compound.
+3. **Compound check** — ask: would a future session need something from this task that is not already visible in code, types, tests, or CI — a rule, a gotcha, or a reusable procedure? If no, skip silently (the expected outcome for most Quick tasks). If yes — REQUIRED SUB-SKILL: eng-loop:compound.
 
 ## Standard
 
@@ -38,28 +38,29 @@ When genuinely torn between two tiers, pick the higher one.
 3. **Implement** — write tests where they fit the change. TDD is available when it helps; it is never mandated.
 4. **Self-review** — read the full diff (`git diff`) before declaring anything: debug leftovers, missed call sites, dead code, scope creep.
 5. **Verify with evidence** — run the full verify suite from the managed section.
-6. **Compound check** — ask: would a future session in this repo need something from this task? If no, skip silently. If yes — REQUIRED SUB-SKILL: eng-loop:compound.
+6. **Compound check** — same question as Quick: anything a future session needs that is not already visible in code, types, tests, or CI? If no, skip silently. If yes — REQUIRED SUB-SKILL: eng-loop:compound.
 
 ## Deep
 
-1. **Spec** — clarifying Q&A with the user, one question at a time, then write the spec to `docs/loop/specs/YYYY-MM-DD-<topic>.md` and commit it. Get the user's approval of the spec before planning.
-2. **Plan** — staged implementation plan to `docs/loop/plans/YYYY-MM-DD-<topic>.md`, committed. Each stage ends in a working state.
-3. **Implement in stages** — one checkpoint commit per plan stage, naming the stage in the commit message. State lives in git, not in context: a fresh session must be able to resume from the repo alone.
-4. **Fresh-context review** — REQUIRED SUB-SKILL: eng-loop:review. Triage every finding: fix / defer / reject, each with a stated reason.
-5. **Verify with evidence** — full verify suite.
-6. **Compound check** — ask: would a future session in this repo need something from this task? Deep work almost always produces a learning. If yes — REQUIRED SUB-SKILL: eng-loop:compound; if genuinely nothing, say so in one line.
+1. **Orient** — as Standard step 1, including the `docs/loop/learnings/INDEX.md` check (if present): Deep work needs the read-back most.
+2. **Spec** — clarifying Q&A with the user, one question at a time, then write the spec to `docs/loop/specs/YYYY-MM-DD-<topic>.md` and commit it. Create a feature branch before this first commit (trunk-based repos may commit to the default branch). Get the user's approval of the spec before planning.
+3. **Plan** — staged implementation plan to `docs/loop/plans/YYYY-MM-DD-<topic>.md`, committed. Each stage ends in a working state.
+4. **Implement in stages** — one checkpoint commit per plan stage, naming the stage in the commit message. State lives in git, not in context: a fresh session must be able to resume from the repo alone.
+5. **Fresh-context review** — REQUIRED SUB-SKILL: eng-loop:review. Triage every finding: fix / defer / reject, each with a stated reason.
+6. **Verify with evidence** — full verify suite (the post-review-fix run from eng-loop:review satisfies this when nothing changed since).
+7. **Compound check** — same question; Deep work almost always produces a learning. If yes — REQUIRED SUB-SKILL: eng-loop:compound; if genuinely nothing, say so in one line.
 
 ## Verification Evidence
 
 Never claim done, fixed, or passing without running the actual command and showing its output in the same message as the claim.
 
-- Use the verify commands from the managed CLAUDE.md section. Quick tier may run only the relevant subset; Standard and Deep run the full set.
-- If the project has no verify command for the change (e.g. no test script): build or compile if possible; otherwise demonstrate the change working (run the app, hit the endpoint, render the page) and show that output. Reasoning alone is never evidence. For doc-only changes, showing the corrected text in place is sufficient evidence.
+- Use the verify commands from the managed CLAUDE.md section. Standard and Deep run the full set. Quick runs the relevant subset: the cheapest command(s) that could plausibly fail because of this change.
+- If no listed command exercises the change: build or compile if possible; otherwise demonstrate the change working (run the app, hit the endpoint, render the page) and show that output. For changes no command or build touches at all (doc edits, UI copy, config values), showing the changed artifact in place is sufficient evidence. Reasoning alone is never evidence.
 - A failing verify command means the work is not done. Report the failure honestly and continue the loop; never reword a failure as success.
 
 ## Escalation Rule (the loop's error handling)
 
-If the task surprises you mid-tier — a Quick fix touches more files than expected, a Standard task reveals architectural implications — **stop, say so, re-classify upward**, and adopt the higher tier's remaining stages (e.g. Standard→Deep mid-flight: write the spec for what remains — the spec-approval gate still applies — then continue).
+If the task surprises you mid-tier — a Quick fix touches more files than expected, a Standard task reveals architectural implications — **stop, say so, and re-classify**. If the new classification is a higher tier, adopt its remaining stages (e.g. Standard→Deep mid-flight: write the spec for what remains — the spec-approval gate still applies — then continue). If it stays the same tier, say so and update the inline plan.
 
 - Escalation needs no permission. Announce it and proceed.
 - De-escalation requires the user's explicit sign-off.

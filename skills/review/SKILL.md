@@ -14,7 +14,7 @@ The implementing context is blind to its own assumptions. This skill gets one cl
 
 ## Procedure
 
-1. Determine the diff range: the merge-base of the feature branch with the default branch, or the parent of the first checkpoint commit of this piece of work — the first stage's changes must be inside the range. Spec and plan docs committed before implementation fall outside it. State the range.
+1. Determine the diff range: BASE is the parent of the first implementation checkpoint commit (when spec and plan were committed before the branch was cut, this equals the merge-base with the default branch). Verify with `git log` that spec and plan commits fall outside the range and the first implementation stage falls inside it. State the range.
 2. Identify the spec path (`docs/loop/specs/...`) if one exists for this work.
 3. Ensure everything under review is committed — the reviewer sees only committed history. Commit it (or, for on-demand reviews, ask the user to) before dispatching.
 4. Dispatch **one** subagent (general-purpose, read-only mindset) with the prompt template below. Do not dispatch more than one reviewer; do not have the reviewer fix anything.
@@ -57,6 +57,6 @@ Every finding gets exactly one disposition, stated out loud before moving on:
 - **Defer** — valid but not being fixed now (out of scope, or too large/risky for this session). Record it: on Deep, append to the plan doc's end under `## Deferred from review`; otherwise tell the user. A deferral without a written destination is a silent drop — not allowed.
 - **Reject** — the reviewer is wrong or the tradeoff is intentional. State the reason in one or two sentences.
 
-Nits default to fix-or-reject, still stated. Deferring or rejecting a **blocker** additionally requires telling the user explicitly, in conversation.
+Nits default to fix-or-reject, still stated. Deferring or rejecting a **blocker** is a gate: state the reason and wait for the user's acknowledgment before proceeding. In a non-interactive session, treat an unresolved blocker as Fix — never self-certify its rejection.
 
 Never silently ignore a finding. Never let the reviewer's verdict replace verification — the verify suite still runs after fixes.

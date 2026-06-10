@@ -18,6 +18,7 @@ Empirical acceptance test for the loop itself. Run in any provisioned project wi
 
 ## Deep tier (pick a genuinely risky/architectural task, or simulate one)
 - [ ] Tier stated up front
+- [ ] Orient ran before the spec — learnings INDEX checked (if present)
 - [ ] Spec written via one-question-at-a-time Q&A, committed to docs/loop/specs/, user approval obtained before planning
 - [ ] Plan committed to docs/loop/plans/ with stages; checkpoint commit per stage
 - [ ] Exactly ONE review subagent dispatched; findings returned with severities
